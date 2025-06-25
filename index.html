@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRIS Working Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e8f2ff 0%, #f5f8ff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-top: 10px;
+        }
+
+        .workflow-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .workflow-card {
+            background: #4a5bb5;
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+            position: relative;
+            transform: translateY(0);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(74, 91, 181, 0.2);
+        }
+
+        .workflow-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(74, 91, 181, 0.3);
+        }
+
+        .workflow-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            line-height: 1.3;
+            margin-bottom: 30px;
+        }
+
+        .workflow-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .workflow-card.active {
+            background: #3498db;
+            transform: scale(1.05);
+        }
+
+        .workflow-details {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .workflow-details.show {
+            display: block;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .workflow-details h3 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .workflow-details p {
+            color: #7f8c8d;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+
+        .close-btn {
+            float: right;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #bdc3c7;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #e74c3c;
+        }
+
+        @media (max-width: 768px) {
+            .workflow-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .workflow-card {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>HRIS Working Demo</h1>
+            <p class="subtitle">Empowering Process Automation</p>
+        </div>
+
+        <div class="workflow-grid">
+            <div class="workflow-card" data-workflow="recruitment">
+                <h3>Recruitment<br>And<br>Onboarding</h3>
+                <div class="workflow-icon">👥</div>
+            </div>
+
+            <div class="workflow-card" data-workflow="employee-data">
+                <h3>Employee<br>Data<br>Management</h3>
+                <div class="workflow-icon">🕐</div>
+            </div>
+
+            <div class="workflow-card" data-workflow="payroll">
+                <h3>Payroll And<br>Compensation</h3>
+                <div class="workflow-icon">💰</div>
+            </div>
+
+            <div class="workflow-card" data-workflow="performance">
+                <h3>Performance<br>Management</h3>
+                <div class="workflow-icon">📋</div>
+            </div>
+
+            <div class="workflow-card" data-workflow="time-attendance">
+                <h3>Time And<br>Attendance</h3>
+                <div class="workflow-icon">⏰</div>
+            </div>
+
+            <div class="workflow-card" data-workflow="training">
+                <h3>Training And<br>Development</h3>
+                <div class="workflow-icon">📚</div>
+            </div>
+        </div>
+
+        <div id="workflow-details" class="workflow-details">
+            <button class="close-btn" onclick="closeDetails()">&times;</button>
+            <h3 id="details-title"></h3>
+            <p id="details-content"></p>
+        </div>
+    </div>
+
+    <script>
+        const workflowData = {
+            'recruitment': {
+                title: 'Recruitment And Onboarding',
+                content: 'Automate job posting, candidate screening, interview scheduling, and onboarding workflows. Streamline the entire hiring process from application to first day, reducing time-to-hire and improving candidate experience.'
+            },
+            'employee-data': {
+                title: 'Employee Data Management',
+                content: 'Centralize and automate employee information management, including personal details, employment history, benefits enrollment, and document management. Ensure data accuracy and compliance with automated workflows.'
+            },
+            'payroll': {
+                title: 'Payroll And Compensation',
+                content: 'Automate payroll processing, tax calculations, benefit deductions, and compensation management. Integrate with time tracking systems and ensure accurate, timely payments while maintaining compliance.'
+            },
+            'performance': {
+                title: 'Performance Management',
+                content: 'Streamline performance reviews, goal setting, feedback collection, and performance improvement plans. Automate reminder notifications and generate performance analytics for better decision-making.'
+            },
+            'time-attendance': {
+                title: 'Time And Attendance',
+                content: 'Automate time tracking, attendance monitoring, leave requests, and schedule management. Integrate with payroll systems and provide real-time visibility into workforce attendance patterns.'
+            },
+            'training': {
+                title: 'Training And Development',
+                content: 'Automate training program enrollment, progress tracking, certification management, and skill development pathways. Create personalized learning experiences and track employee development goals.'
+            }
+        };
+
+        function showDetails(workflow) {
+            const detailsDiv = document.getElementById('workflow-details');
+            const titleElement = document.getElementById('details-title');
+            const contentElement = document.getElementById('details-content');
+            
+            titleElement.textContent = workflowData[workflow].title;
+            contentElement.textContent = workflowData[workflow].content;
+            
+            detailsDiv.classList.add('show');
+            
+            // Remove active class from all cards
+            document.querySelectorAll('.workflow-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            // Add active class to clicked card
+            document.querySelector(`[data-workflow="${workflow}"]`).classList.add('active');
+        }
+
+        function closeDetails() {
+            const detailsDiv = document.getElementById('workflow-details');
+            detailsDiv.classList.remove('show');
+            
+            // Remove active class from all cards
+            document.querySelectorAll('.workflow-card').forEach(card => {
+                card.classList.remove('active');
+            });
+        }
+
+        // Add click event listeners to workflow cards
+        document.querySelectorAll('.workflow-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const workflow = this.getAttribute('data-workflow');
+                showDetails(workflow);
+            });
+        });
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeDetails();
+            }
+        });
+    </script>
+</body>
+</html>
